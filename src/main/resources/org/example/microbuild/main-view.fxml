@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.effect.SepiaTone?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.microbuild.MainController">
+    <top>
+        <VBox alignment="CENTER" prefHeight="80.0" prefWidth="100.0" spacing="5.0" style="-fx-background-color: #180118;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+            <children>
+            <ImageView fitHeight="81.0" fitWidth="79.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/logo.png" />
+               </image>
+            </ImageView>
+                <Label text="MicroBuild PC" textFill="WHITE">
+                    <font>
+                        <Font name="Inter Regular" size="22.0" />
+                    </font>
+                </Label>
+                <Label text="Select components to configure your system and verify compatibility" textFill="#a68f8f">
+                    <font>
+                        <Font name="Inter Regular" size="12.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </top>
+    <right>
+        <VBox prefHeight="200.0" prefWidth="380.0" spacing="15.0" style="-fx-background-color: #493D66;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+            <children>
+                <VBox spacing="8.0" style="-fx-background-color: #352B4C; -fx-background-radius: 20; -fx-padding: 12;">
+                    <children>
+                        <Label fx:id="totalPriceLabel" text="Total Price: PHP 0.00" textFill="WHITE">
+                            <font>
+                                <Font name="Inter Regular" size="23.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="powerDrawLabel" text="Estimated Load: 0 W" textFill="#d1c4e9">
+                     <font>
+                        <Font name="Inter Regular" size="12.0" />
+                     </font></Label>
+                        <Label fx:id="recommendedPsuLabel" text="Recommended PSU: 0 W" textFill="#d1c4e9">
+                     <font>
+                        <Font name="Inter Regular" size="12.0" />
+                     </font></Label>
+                    </children>
+                </VBox>
+                <TextArea fx:id="quoteOutputTextArea" blendMode="MULTIPLY" prefHeight="300.0" prefWidth="350.0" wrapText="true" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></TextArea>
+                <HBox spacing="10.0">
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleClearBuild" text="Clear All" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font name="Inter Regular" size="12.0" />
+                     </font></Button>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleGenerateQuote" text="Generate Quote" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font name="Inter Regular" size="12.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </right>
+    <center>
+        <GridPane blendMode="SRC_ATOP" hgap="12.0" style="-fx-background-color: #100344;" vgap="10.0" BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="300.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+            </rowConstraints>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <Label text="CPU" textFill="WHITE">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="cpuComboBox" maxWidth="1.7976931348623157E308" promptText="Select CPU..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" />
+                <Label text="Motherboard" textFill="WHITE" GridPane.rowIndex="1">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="motherboardComboBox" maxWidth="1.7976931348623157E308" promptText="Select Motherboard..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label text="RAM" textFill="WHITE" GridPane.rowIndex="2">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="ramComboBox" maxWidth="1.7976931348623157E308" promptText="Select RAM..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label text="GPU" textFill="WHITE" GridPane.rowIndex="3">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="gpuComboBox" maxWidth="1.7976931348623157E308" promptText="Select GPU..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label text="PSU" textFill="WHITE" GridPane.rowIndex="4">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="psuComboBox" maxWidth="1.7976931348623157E308" promptText="Select PSU..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label text="Storage" textFill="WHITE" GridPane.rowIndex="5">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="storageComboBox" maxWidth="1.7976931348623157E308" promptText="Select Storage..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label text="Case" textFill="WHITE" GridPane.rowIndex="6">
+               <font>
+                  <Font name="Inter Regular" size="12.0" />
+               </font></Label>
+                <ComboBox fx:id="caseComboBox" maxWidth="1.7976931348623157E308" promptText="Select Case..." style="-fx-background-radius: 20;" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            </children>
+        </GridPane>
+    </center>
+</BorderPane>
