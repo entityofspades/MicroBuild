@@ -3,21 +3,23 @@ package org.example.microbuild;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import org.example.microbuild.*;
 
 public class MainController {
 
-    // --- FXML Components ---
-    @FXML private ComboBox<CPU> cpuComboBox;
-    @FXML private ComboBox<Motherboard> motherboardComboBox;
-    @FXML private ComboBox<RAM> ramComboBox;
-    @FXML private ComboBox<GPU> gpuComboBox;
-    @FXML private ComboBox<PSU> psuComboBox;
-    @FXML private ComboBox<Storage> storageComboBox;
-    @FXML private ComboBox<CaseComponent> caseComboBox;
+    // --- FXML Components (ListViews & Search) ---
+    @FXML private TextField searchBarTextField;
+    @FXML private ListView<CPU> cpuListView;
+    @FXML private ListView<Motherboard> motherboardListView;
+    @FXML private ListView<RAM> ramListView;
+    @FXML private ListView<GPU> gpuListView;
+    @FXML private ListView<PSU> psuListView;
+    @FXML private ListView<Storage> storageListView;
+    @FXML private ListView<CaseComponent> caseListView;
 
     @FXML private Label totalPriceLabel;
     @FXML private Label powerDrawLabel;
@@ -30,92 +32,110 @@ public class MainController {
     private CompatibilityChecker compatibilityChecker;
     private QuoteGenerator quoteGenerator;
 
+    // Master lists para sa filtering ng search bar
+    private ObservableList<CPU> allCpus = FXCollections.observableArrayList();
+    private ObservableList<Motherboard> allMotherboards = FXCollections.observableArrayList();
+    private ObservableList<RAM> allRams = FXCollections.observableArrayList();
+    private ObservableList<GPU> allGpus = FXCollections.observableArrayList();
+    private ObservableList<PSU> allPsus = FXCollections.observableArrayList();
+    private ObservableList<Storage> allStorages = FXCollections.observableArrayList();
+    private ObservableList<CaseComponent> allCases = FXCollections.observableArrayList();
+
     @FXML
     public void initialize() {
-        // 1. Initialize Backend Objects
         inventory = seedInventory();
         currentBuild = new BuildConfiguration("My Custom PC");
         compatibilityChecker = new CompatibilityChecker();
         quoteGenerator = new QuoteGenerator();
 
-        // 2. Populate ComboBoxes with Components
-        populateComboBoxes();
-
-        // 3. Add Listeners to update build when user changes selection
+        loadInventoryToLists();
         setupSelectionListeners();
+        setupSearchFilter();
     }
 
-    private void populateComboBoxes() {
+    private void loadInventoryToLists() {
         for (Component c : inventory.getCatalog().values()) {
-            if (c instanceof CPU) {
-                cpuComboBox.getItems().add((CPU) c);
-            } else if (c instanceof Motherboard) {
-                motherboardComboBox.getItems().add((Motherboard) c);
-            } else if (c instanceof RAM) {
-                ramComboBox.getItems().add((RAM) c);
-            } else if (c instanceof GPU) {
-                gpuComboBox.getItems().add((GPU) c);
-            } else if (c instanceof PSU) {
-                psuComboBox.getItems().add((PSU) c);
-            } else if (c instanceof Storage) {
-                storageComboBox.getItems().add((Storage) c);
-            } else if (c instanceof CaseComponent) {
-                caseComboBox.getItems().add((CaseComponent) c);
-            }
+            if (c instanceof CPU) allCpus.add((CPU) c);
+            else if (c instanceof Motherboard) allMotherboards.add((Motherboard) c);
+            else if (c instanceof RAM) allRams.add((RAM) c);
+            else if (c instanceof GPU) allGpus.add((GPU) c);
+            else if (c instanceof PSU) allPsus.add((PSU) c);
+            else if (c instanceof Storage) allStorages.add((Storage) c);
+            else if (c instanceof CaseComponent) allCases.add((CaseComponent) c);
         }
+
+        cpuListView.setItems(allCpus);
+        motherboardListView.setItems(allMotherboards);
+        ramListView.setItems(allRams);
+        gpuListView.setItems(allGpus);
+        psuListView.setItems(allPsus);
+        storageListView.setItems(allStorages);
+        caseListView.setItems(allCases);
     }
 
     private void setupSelectionListeners() {
-        cpuComboBox.setOnAction(e -> {
-            currentBuild.setCpu(cpuComboBox.getValue());
+        cpuListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            currentBuild.setCpu(newVal);
             updateSummary();
         });
 
-        motherboardComboBox.setOnAction(e -> {
-            currentBuild.setMotherboard(motherboardComboBox.getValue());
+        motherboardListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            currentBuild.setMotherboard(newVal);
             updateSummary();
         });
 
-        ramComboBox.setOnAction(e -> {
-            currentBuild.setRam(ramComboBox.getValue());
+        ramListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            currentBuild.setRam(newVal);
             updateSummary();
         });
 
-        gpuComboBox.setOnAction(e -> {
-            currentBuild.setGpu(gpuComboBox.getValue());
+        gpuListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            currentBuild.setGpu(newVal);
             updateSummary();
         });
 
-        psuComboBox.setOnAction(e -> {
-            currentBuild.setPsu(psuComboBox.getValue());
+        psuListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            currentBuild.setPsu(newVal);
             updateSummary();
         });
 
-        storageComboBox.setOnAction(e -> {
-            if (storageComboBox.getValue() != null) {
-                currentBuild.getStorageDrives().clear(); // o pwede ding i-append
-                currentBuild.addStorage(storageComboBox.getValue());
+        storageListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                currentBuild.getStorageDrives().clear();
+                currentBuild.addStorage(newVal);
+                updateSummary();
             }
-            updateSummary();
         });
 
-        caseComboBox.setOnAction(e -> {
-            currentBuild.setPcCase(caseComboBox.getValue());
+        caseListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            currentBuild.setPcCase(newVal);
             updateSummary();
+        });
+    }
+
+    // Search bar logic para salain ang mga components base sa keyword
+    private void setupSearchFilter() {
+        searchBarTextField.textProperty().addListener((obs, oldText, newText) -> {
+            String query = newText == null ? "" : newText.toLowerCase();
+
+            cpuListView.setItems(allCpus.filtered(c -> c.getName().toLowerCase().contains(query) || c.getId().toLowerCase().contains(query)));
+            motherboardListView.setItems(allMotherboards.filtered(m -> m.getName().toLowerCase().contains(query) || m.getId().toLowerCase().contains(query)));
+            ramListView.setItems(allRams.filtered(r -> r.getName().toLowerCase().contains(query) || r.getId().toLowerCase().contains(query)));
+            gpuListView.setItems(allGpus.filtered(g -> g.getName().toLowerCase().contains(query) || g.getId().toLowerCase().contains(query)));
+            psuListView.setItems(allPsus.filtered(p -> p.getName().toLowerCase().contains(query) || p.getId().toLowerCase().contains(query)));
+            storageListView.setItems(allStorages.filtered(s -> s.getName().toLowerCase().contains(query) || s.getId().toLowerCase().contains(query)));
+            caseListView.setItems(allCases.filtered(cs -> cs.getName().toLowerCase().contains(query) || cs.getId().toLowerCase().contains(query)));
         });
     }
 
     private void updateSummary() {
-        // Total Price
         totalPriceLabel.setText(String.format("Total Price: PHP %.2f", currentBuild.getTotalPrice()));
 
-        // Power Calculation
         int totalWatts = PowerCalculator.calculateTotalLoadWatts(currentBuild);
         int recommendedWatts = PowerCalculator.calculateRecommendedPsuWattage(currentBuild);
         powerDrawLabel.setText("Estimated Load: " + totalWatts + " W");
         recommendedPsuLabel.setText("Recommended PSU: " + recommendedWatts + " W");
 
-        // Live Compatibility Check
         var issues = compatibilityChecker.check(currentBuild);
         if (issues.isEmpty()) {
             quoteOutputTextArea.setText("Status: PASSED - All selected parts are compatible!");
@@ -130,13 +150,13 @@ public class MainController {
 
     @FXML
     private void handleClearBuild() {
-        cpuComboBox.setValue(null);
-        motherboardComboBox.setValue(null);
-        ramComboBox.setValue(null);
-        gpuComboBox.setValue(null);
-        psuComboBox.setValue(null);
-        storageComboBox.setValue(null);
-        caseComboBox.setValue(null);
+        cpuListView.getSelectionModel().clearSelection();
+        motherboardListView.getSelectionModel().clearSelection();
+        ramListView.getSelectionModel().clearSelection();
+        gpuListView.getSelectionModel().clearSelection();
+        psuListView.getSelectionModel().clearSelection();
+        storageListView.getSelectionModel().clearSelection();
+        caseListView.getSelectionModel().clearSelection();
 
         currentBuild = new BuildConfiguration("My Custom PC");
         updateSummary();
@@ -144,36 +164,27 @@ public class MainController {
 
     @FXML
     private void handleGenerateQuote() {
-        // Displays full quotation string from QuoteGenerator
         String fullQuote = quoteGenerator.generateQuote(currentBuild);
         quoteOutputTextArea.setText(fullQuote);
     }
 
-    // Kinopya mula sa Main.java mo para magkaroon ng initial items:
     private InventoryManager seedInventory() {
+        // Ginamit ang parehong seed data mula sa lumang code mo[cite: 1]
         InventoryManager inv = new InventoryManager();
-
         inv.addComponent(new CPU("CPU1", "AMD Ryzen 5 7600", 12500, "AM5", 6, 65), 10);
         inv.addComponent(new CPU("CPU2", "Intel Core i5-13400F", 10500, "LGA1700", 10, 65), 8);
-
         inv.addComponent(new Motherboard("MB1", "MSI B650M PRO", 7500, "AM5", "DDR5", 128, "mATX"), 5);
         inv.addComponent(new Motherboard("MB2", "ASUS Prime B760M", 6800, "LGA1700", "DDR4", 128, "mATX"), 5);
-
         inv.addComponent(new RAM("RAM1", "Kingston Fury 16GB DDR5 6000", 3200, "DDR5", 16, 6000), 15);
         inv.addComponent(new RAM("RAM2", "Corsair Vengeance 16GB DDR4 3200", 2400, "DDR4", 16, 3200), 15);
-
         inv.addComponent(new GPU("GPU1", "NVIDIA RTX 4060", 22000, 200, 285, 550), 6);
         inv.addComponent(new GPU("GPU2", "AMD RX 7600", 19500, 165, 280, 550), 6);
-
         inv.addComponent(new PSU("PSU1", "Cooler Master 550W Bronze", 3500, 550, "ATX"), 10);
         inv.addComponent(new PSU("PSU2", "Seasonic 650W Gold", 5200, 650, "ATX"), 10);
-
         inv.addComponent(new Storage("SSD1", "Samsung 980 1TB NVMe", 4200, "SSD", 1000, "NVMe"), 20);
         inv.addComponent(new Storage("HDD1", "Seagate Barracuda 2TB", 2600, "HDD", 2000, "SATA"), 12);
-
         inv.addComponent(new CaseComponent("CASE1", "NZXT H510", 4800, "ATX,mATX,ITX", 300), 7);
         inv.addComponent(new CaseComponent("CASE2", "Cooler Master MasterBox Q300L", 2900, "mATX,ITX", 360), 7);
-
         return inv;
     }
 }
